@@ -17,7 +17,7 @@ export function AdminBookingsScreen({ onBack, bookings, setBookings }: { onBack:
 
   return (
     <>
-      <TopBar title="Booking Requests" onBack={onBack} isAdmin badge={pendingCount} />
+      <TopBar title="Booking Requests" onBack={onBack} isAdmin />
       <Page>
         <div className="max-w-3xl mx-auto">
           {/* Stats row */}
@@ -161,5 +161,3 @@ export function AdminBookingsScreen({ onBack, bookings, setBookings }: { onBack:
     </>
   );
 }
-
-export default AdminBookingsScreen;

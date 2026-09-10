@@ -21,7 +21,7 @@ export function ChatScreen({ onNav, onBack, setActiveConvo, convos, isAdmin }: C
   const openConvo = (id: string) => { setActiveConvo(id); setActiveId(id); onNav(threadScreen); };
   return (
     <>
-      <TopBar title={isAdmin ? "Chat Management" : "Messages"} onBack={onBack} badge={totalUnread} isAdmin={isAdmin} />
+      <TopBar title={isAdmin ? "Chat Management" : "Messages"} onBack={onBack} isAdmin={isAdmin} />
       <Page noPad>
         <div className="pt-4 lg:grid lg:grid-cols-[320px_1fr] lg:h-[calc(100vh-56px)]">
           <div className="border-r overflow-y-auto px-4 sm:px-6 pb-20 lg:pb-4" style={{ borderColor: "rgba(124,58,237,0.1)" }}>

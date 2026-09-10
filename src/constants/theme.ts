@@ -1,4 +1,4 @@
-﻿import type { Settings, SlotStatus, BookingStatus, PostType } from "../types/index";
+﻿import type { Settings, SlotStatus, BookingStatus, PostType, Conversation } from "../types/index";
 
 // ─── Brand tokens ─────────────────────────────────────────────────────────────
 export const PURPLE = "#7c3aed";
@@ -11,10 +11,8 @@ export const SURFACE = "#1e1e2a";
 export const BG = "#0d0d14";
 
 // ─── Rates ────────────────────────────────────────────────────────────────────
-export const RATE_MORNING = 250;
-export const RATE_EVENING = 300;
-export const MORNING_HOURS = "6:00 AM – 12:00 PM";
-export const EVENING_HOURS = "12:00 PM – 9:00 PM";
+const RATE_MORNING = 250;
+const RATE_EVENING = 300;
 
 export const isMorningSlot = (time: string) => {
   const hour = parseInt(time.split(":")[0]);
@@ -48,11 +46,16 @@ export const DEFAULT_SETTINGS: Settings = {
 export const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export const WEEK_DATES = ["18", "19", "20", "21", "22", "23", "24"];
 
-export const AFMC_COURTS = [
-  { id: "c1", name: "Court 1", color: "Purple", available: true },
-  { id: "c2", name: "Court 2", color: "Purple", available: true },
-  { id: "c3", name: "Court 3", color: "Orange", available: true },
-];
+export const DEFAULT_SUPPORT_CONVO: Conversation = {
+  id: "c1",
+  name: "AFMC Support",
+  avatar: "🛡️",
+  lastMsg: "Hi! How can we help you today?",
+  time: "Now",
+  unread: 0,
+  isSupport: true,
+  messages: [{ id: "m1", from: "them", text: "Hi! How can we help you today?", time: "9:00 AM" }],
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 export const slotColor: Record<SlotStatus, string> = {

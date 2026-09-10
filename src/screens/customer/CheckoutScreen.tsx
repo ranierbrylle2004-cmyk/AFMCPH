@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import type { Screen, Settings } from "../../types/index";
-import { PURPLE, ORANGE, PURPLE_DIM, PURPLE_BORDER, CARD, DEFAULT_SETTINGS } from "../../constants/theme";
+import { PURPLE, ORANGE, ORANGE_DIM, PURPLE_DIM, PURPLE_BORDER, CARD, DEFAULT_SETTINGS } from "../../constants/theme";
 import { TopBar, Page } from "../../components/Layout";
 import { IcoClock } from "../../components/Icons";
 

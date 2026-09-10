@@ -293,5 +293,3 @@ export function AdminSettingsScreen({ settings, patchSettings, onBack }: { setti
     </>
   );
 }
-
-export default AdminSettingsScreen;

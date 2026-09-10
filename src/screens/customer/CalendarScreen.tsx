@@ -1,11 +1,11 @@
 import { useState } from "react";
-import type { Screen, Settings, SlotStatus } from "../../types/index";
+import type { Screen, Settings, SlotStatus, TimeSlot } from "../../types/index";
 import { PURPLE, ORANGE, PURPLE_DIM, PURPLE_BORDER, CARD, SURFACE, BG, DEFAULT_SETTINGS, WEEK_DAYS, WEEK_DATES, slotColor, slotLabel, isMorningSlot } from "../../constants/theme";
 import { TopBar, Page } from "../../components/Layout";
 
 import afmcCourt1 from "@/imports/788780245_122100397719458370_3038049992003171720_n.jpg";
 
-const TIME_SLOTS = [
+const TIME_SLOTS: TimeSlot[] = [
   { time: "6:00 AM", status: "available" }, { time: "7:00 AM", status: "available" },
   { time: "8:00 AM", status: "available" }, { time: "9:00 AM", status: "available" },
   { time: "10:00 AM", status: "available" }, { time: "11:00 AM", status: "available" },
@@ -114,7 +114,7 @@ export function CalendarScreen({ onNav, onBack, settings = DEFAULT_SETTINGS }: {
                 </span>
               </div>
               {selectedSlot && (
-                <p className="text-xs mt-1 text-right" style={{ color: isMorningSlot(selectedSlot) ? "#9ca3af" : "#9ca3af" }}>
+                <p className="text-xs mt-1 text-right text-gray-400">
                   {isMorningSlot(selectedSlot) ? "Morning rate" : "Evening rate"}
                 </p>
               )}

@@ -8,13 +8,6 @@ export const IcoMenu = () => (
   </svg>
 );
 
-export const IcoUser = () => (
-  <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-    <circle cx="11" cy="8" r="4" stroke="white" strokeWidth="1.8"/>
-    <path d="M3 20c0-4 3.582-7 8-7s8 3 8 7" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
-  </svg>
-);
-
 export const IcoClose = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path d="M4 4l12 12M16 4L4 16" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
@@ -68,13 +61,6 @@ export const IcoPin = () => (
 export const IcoShield = () => (
   <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
     <path d="M8 1l5 2v4c0 3-2 6-5 7C6 13 3 10 3 7V3l5-2Z" stroke="white" strokeWidth="1.8"/>
-  </svg>
-);
-
-export const IcoBall = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <circle cx="10" cy="10" r="8.5" stroke={ORANGE} strokeWidth="1.5"/>
-    <path d="M10 1.5c0 4.7-3 8.5-8.5 8.5M10 18.5c0-4.7 3-8.5 8.5-8.5M1.5 10h17" stroke={ORANGE} strokeWidth="1.5"/>
   </svg>
 );
 

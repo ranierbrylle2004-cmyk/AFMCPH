@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Screen, Settings, Booking, Post, Conversation } from "./types/index";
-import { DEFAULT_SETTINGS, BG } from "./constants/theme";
+import { DEFAULT_SETTINGS, DEFAULT_SUPPORT_CONVO, BG } from "./constants/theme";
 import { TopBarCtx, Sidebar, BottomNav } from "./components/Layout";
 
 // Auth screens
@@ -33,8 +33,8 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeConvo, setActiveConvo] = useState<string>("c1");
-  const [custConvos, setCustConvos] = useState<Conversation[]>([]);
-  const [adminConvos, setAdminConvos] = useState<Conversation[]>([]);
+  const [custConvos, setCustConvos] = useState<Conversation[]>([DEFAULT_SUPPORT_CONVO]);
+  const [adminConvos, setAdminConvos] = useState<Conversation[]>([DEFAULT_SUPPORT_CONVO]);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const patchSettings = (p: Partial<Settings>) => setSettings((s) => ({ ...s, ...p }));
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -69,7 +69,7 @@ export default function App() {
     <div className="min-h-screen w-full" style={{ backgroundColor: BG }}>
       <Sidebar screen={screen} onNav={navigate} isAdmin={isAdmin} />
       <div className="lg:pl-60">
-        {screen === "home" && <HomeScreen onNav={navigate} isAdmin={isAdmin} menuOpen={menuOpen} setMenuOpen={setMenuOpen} settings={settings} bookings={bookings} posts={posts} members={adminConvos.length} />}
+        {screen === "home" && <HomeScreen onNav={navigate} isAdmin={isAdmin} menuOpen={menuOpen} setMenuOpen={setMenuOpen} settings={settings} bookings={bookings} posts={posts} />}
         {screen === "venue-detail" && <VenueDetailScreen onNav={navigate} onBack={goBack} settings={settings} />}
         {screen === "calendar" && <CalendarScreen onNav={navigate} onBack={goBack} settings={settings} />}
         {screen === "checkout" && <CheckoutScreen onNav={navigate} onBack={goBack} settings={settings} />}

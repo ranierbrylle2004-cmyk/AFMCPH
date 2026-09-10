@@ -1,14 +1,13 @@
-import { useState } from "react";
 import type { Screen, Booking, Post, Settings } from "../../types/index";
-import { PURPLE, ORANGE, PURPLE_DIM, PURPLE_BORDER, ORANGE_DIM, CARD, DEFAULT_SETTINGS, BG } from "../../constants/theme";
-import { Drawer, TopBar, Page, AFMCLogo } from "../../components/Layout";
+import { PURPLE, ORANGE, PURPLE_DIM, PURPLE_BORDER, ORANGE_DIM, CARD, DEFAULT_SETTINGS } from "../../constants/theme";
+import { Drawer, TopBar, Page } from "../../components/Layout";
 
 import afmcPromo from "@/imports/790425814_122100518511458370_6831669957420292525_n.jpg";
 import afmcCourt1 from "@/imports/788780245_122100397719458370_3038049992003171720_n.jpg";
 import afmcWide from "@/imports/789708970_122100406083458370_5937877576636999396_n.jpg";
 import afmcNet from "@/imports/789680621_122100406119458370_4428193008530842799_n.jpg";
 
-export function HomeScreen({ onNav, isAdmin, menuOpen, setMenuOpen, settings = DEFAULT_SETTINGS, bookings, posts, members }: { onNav: (s: Screen) => void; isAdmin: boolean; menuOpen: boolean; setMenuOpen: (v: boolean) => void; settings?: Settings; bookings: Booking[]; posts: Post[]; members: number }) {
+export function HomeScreen({ onNav, isAdmin, menuOpen, setMenuOpen, settings = DEFAULT_SETTINGS, bookings, posts }: { onNav: (s: Screen) => void; isAdmin: boolean; menuOpen: boolean; setMenuOpen: (v: boolean) => void; settings?: Settings; bookings: Booking[]; posts: Post[] }) {
   const availableCourts = settings.courts.filter((c) => c.available).length;
   return (
     <>

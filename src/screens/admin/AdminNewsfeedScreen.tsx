@@ -5,18 +5,17 @@ import { TopBar, Page } from "../../components/Layout";
 
 export function AdminNewsfeedScreen({ onBack, posts, setPosts, pendingPosts, setPendingPosts }: { onBack: () => void; posts: Post[]; setPosts: React.Dispatch<React.SetStateAction<Post[]>>; pendingPosts: Post[]; setPendingPosts: React.Dispatch<React.SetStateAction<Post[]>> }) {
   const [tab, setTab] = useState<"feed" | "pending" | "create">("feed");
-  const pending = pendingPosts;
-  const setPending = setPendingPosts;
-  const approved = posts;
-  const setApproved = setPosts;
   const [newType, setNewType] = useState<PostType>("announcement");
   const [newTitle, setNewTitle] = useState("");
   const [newBody, setNewBody] = useState("");
-  const approve = (p: Post) => { setApproved((prev) => [{ ...p, status: "approved" as PostStatus }, ...prev]); setPending((prev) => prev.filter((x) => x.id !== p.id)); };
-  const reject = (id: string) => setPending((prev) => prev.filter((x) => x.id !== id));
+  const approve = (p: Post) => {
+    setPosts((prev) => [{ ...p, status: "approved" as PostStatus }, ...prev]);
+    setPendingPosts((prev) => prev.filter((x) => x.id !== p.id));
+  };
+  const reject = (id: string) => setPendingPosts((prev) => prev.filter((x) => x.id !== id));
   const publish = () => {
     if (!newTitle.trim() || !newBody.trim()) return;
-    setApproved((prev) => [{ id: `admin${Date.now()}`, type: newType, title: newTitle, body: newBody, author: "AFMC Admin", avatar: "🛡️", date: "Just now", status: "approved", likes: 0, comments: 0, pinned: newType === "emergency" }, ...prev]);
+    setPosts((prev) => [{ id: `admin${Date.now()}`, type: newType, title: newTitle, body: newBody, author: "AFMC Admin", avatar: "🛡️", date: "Just now", status: "approved", likes: 0, comments: 0, pinned: newType === "emergency" }, ...prev]);
     setNewTitle(""); setNewBody(""); setTab("feed");
   };
   return (
@@ -24,7 +23,7 @@ export function AdminNewsfeedScreen({ onBack, posts, setPosts, pendingPosts, set
       <TopBar title="Newsfeed Mgmt" onBack={onBack} isAdmin />
       <Page noPad>
         <div className="border-b flex" style={{ borderColor: "rgba(124,58,237,0.15)" }}>
-          {([["feed", "Live Feed"], ["pending", `Review (${pending.length})`], ["create", "Publish"]] as const).map(([t, label]) => (
+          {([["feed", "Live Feed"], ["pending", `Review (${pendingPosts.length})`], ["create", "Publish"]] as const).map(([t, label]) => (
             <button key={t} onClick={() => setTab(t)} className={`flex-1 py-3.5 text-xs font-bold tracking-wide transition-colors`}
               style={{ color: tab === t ? ORANGE : "#6b7280", borderBottom: tab === t ? `2px solid ${ORANGE}` : "2px solid transparent" }}>{label}</button>
           ))}
@@ -32,7 +31,7 @@ export function AdminNewsfeedScreen({ onBack, posts, setPosts, pendingPosts, set
         <div className="px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto">
           {tab === "feed" && (
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-              {approved.map((p) => (
+              {posts.map((p) => (
                 <div key={p.id} className="rounded-2xl p-4" style={{ backgroundColor: CARD }}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] px-2.5 py-0.5 rounded-full font-semibold" style={{ backgroundColor: postTypeStyle[p.type].bg, color: postTypeStyle[p.type].text }}>{postTypeStyle[p.type].label}</span>
@@ -44,7 +43,7 @@ export function AdminNewsfeedScreen({ onBack, posts, setPosts, pendingPosts, set
                     <span className="text-gray-500 text-xs">❤️ {p.likes}</span>
                     <span className="text-gray-500 text-xs">💬 {p.comments}</span>
                     <span className="text-gray-500 text-xs">{p.date}</span>
-                    <button onClick={() => setApproved((prev) => prev.filter((x) => x.id !== p.id))}
+                    <button onClick={() => setPosts((prev) => prev.filter((x) => x.id !== p.id))}
                       className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors hover:bg-red-500/15"
                       style={{ color: "#f87171", border: "1px solid rgba(239,68,68,0.25)" }}>
                       Remove
@@ -56,8 +55,8 @@ export function AdminNewsfeedScreen({ onBack, posts, setPosts, pendingPosts, set
           )}
           {tab === "pending" && (
             <div className="mt-4 flex flex-col gap-3 pb-8">
-              {pending.length === 0 && <div className="text-center py-16"><p className="text-4xl mb-3">✅</p><p className="text-gray-400 text-sm">All clear — no posts awaiting review.</p></div>}
-              {pending.map((p) => (
+              {pendingPosts.length === 0 && <div className="text-center py-16"><p className="text-4xl mb-3">✅</p><p className="text-gray-400 text-sm">All clear — no posts awaiting review.</p></div>}
+              {pendingPosts.map((p) => (
                 <div key={p.id} className="rounded-2xl p-4" style={{ backgroundColor: CARD, border: `1px solid rgba(249,115,22,0.15)` }}>
                   <div className="flex items-center gap-2 mb-2.5">
                     <span className="text-xl">{p.avatar}</span>
@@ -110,5 +109,3 @@ export function AdminNewsfeedScreen({ onBack, posts, setPosts, pendingPosts, set
     </>
   );
 }
-
-export default AdminNewsfeedScreen;

@@ -1,7 +1,40 @@
 ﻿import { useState, useContext, createContext } from "react";
 import type { Screen } from "../types/index";
-import { BG, CARD, ORANGE, PURPLE, PURPLE_BORDER, PURPLE_DIM, SURFACE } from "../constants/theme";
+import { BG, ORANGE, PURPLE, PURPLE_BORDER, PURPLE_DIM, SURFACE } from "../constants/theme";
 import { IcoMenu, IcoClose, IcoBack, IcoBell } from "./Icons";
+
+type NavItem = { s: Screen; label: string; icon: string };
+
+const CUSTOMER_NAV: NavItem[] = [
+  { s: "home", label: "Home", icon: "🏠" },
+  { s: "pricing", label: "Rates", icon: "💰" },
+  { s: "calendar", label: "Book a Slot", icon: "📅" },
+  { s: "newsfeed", label: "Community Feed", icon: "📰" },
+  { s: "chat", label: "Messages", icon: "💬" },
+  { s: "dashboard", label: "My Bookings", icon: "🎫" },
+];
+
+const ADMIN_NAV: NavItem[] = [
+  { s: "admin-bookings", label: "Bookings", icon: "📅" },
+  { s: "admin-newsfeed", label: "Newsfeed Mgmt", icon: "📋" },
+  { s: "admin-chat", label: "Chat Management", icon: "🎧" },
+  { s: "admin-settings", label: "Settings", icon: "⚙️" },
+];
+
+const CUSTOMER_BOTTOM_NAV: Screen[] = ["home", "pricing", "newsfeed", "chat", "dashboard"];
+const BOTTOM_NAV_LABELS: Partial<Record<Screen, string>> = {
+  home: "Home", pricing: "Rates", newsfeed: "Feed", chat: "Chat", dashboard: "Bookings",
+  "admin-bookings": "Bookings", "admin-newsfeed": "Newsfeed", "admin-chat": "Chat", "admin-settings": "Settings",
+};
+
+const BOOKING_FLOW: Screen[] = ["calendar", "checkout", "payment"];
+
+const isNavActive = (screen: Screen, link: Screen) =>
+  screen === link
+  || (link === "home" && screen === "venue-detail")
+  || (link === "pricing" && BOOKING_FLOW.includes(screen))
+  || (link === "chat" && screen === "chat-thread")
+  || (link === "admin-chat" && screen === "admin-chat-thread");
 
 // ─── Top Bar Context ──────────────────────────────────────────────────────────
 export const TopBarCtx = createContext<{ onNav: (s: Screen) => void; onLogout: () => void; isAdmin: boolean }>({
@@ -24,21 +57,7 @@ export function AFMCLogo({ size = 32 }: { size?: number }) {
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 export function Sidebar({ screen, onNav, isAdmin }: { screen: Screen; onNav: (s: Screen) => void; isAdmin: boolean }) {
-  const custNav = [
-    { s: "home" as Screen, label: "Home", icon: "🏠" },
-    { s: "pricing" as Screen, label: "Rates", icon: "💰" },
-    { s: "calendar" as Screen, label: "Book a Slot", icon: "📅" },
-    { s: "newsfeed" as Screen, label: "Community Feed", icon: "📰" },
-    { s: "chat" as Screen, label: "Messages", icon: "💬" },
-    { s: "dashboard" as Screen, label: "My Bookings", icon: "🎫" },
-  ];
-  const adminNav = [
-    { s: "admin-bookings" as Screen, label: "Bookings", icon: "📅" },
-    { s: "admin-newsfeed" as Screen, label: "Newsfeed Mgmt", icon: "📋" },
-    { s: "admin-chat" as Screen, label: "Chat Management", icon: "🎧" },
-    { s: "admin-settings" as Screen, label: "Settings", icon: "⚙️" },
-  ];
-  const links = isAdmin ? adminNav : custNav;
+  const links = isAdmin ? ADMIN_NAV : CUSTOMER_NAV;
   return (
     <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-60 border-r z-40 py-6 px-4"
       style={{ backgroundColor: BG, borderColor: "rgba(124,58,237,0.15)" }}>
@@ -54,7 +73,7 @@ export function Sidebar({ screen, onNav, isAdmin }: { screen: Screen; onNav: (s:
       {isAdmin && <div className="mb-3 px-2"><span className="text-[10px] font-bold tracking-widest px-2.5 py-1 rounded-full" style={{ backgroundColor: PURPLE_DIM, color: "#a78bfa" }}>ADMIN PANEL</span></div>}
       <nav className="flex flex-col gap-1 flex-1">
         {links.map((l) => {
-          const active = screen === l.s || (l.s === "chat" && screen === "chat-thread") || (l.s === "admin-chat" && screen === "admin-chat-thread");
+          const active = isNavActive(screen, l.s);
           return (
             <button key={l.s} onClick={() => onNav(l.s)}
               className="flex items-center gap-3 px-3 py-3 rounded-xl text-left font-medium transition-all"
@@ -84,9 +103,7 @@ export function Sidebar({ screen, onNav, isAdmin }: { screen: Screen; onNav: (s:
 // ─── Mobile Drawer ────────────────────────────────────────────────────────────
 export function Drawer({ open, onClose, onNav, isAdmin }: { open: boolean; onClose: () => void; onNav: (s: Screen) => void; isAdmin: boolean }) {
   if (!open) return null;
-  const links = isAdmin
-    ? [{ s: "admin-bookings" as Screen, label: "Bookings", icon: "📅" }, { s: "admin-newsfeed" as Screen, label: "Newsfeed Management", icon: "📋" }, { s: "admin-chat" as Screen, label: "Chat Management", icon: "🎧" }, { s: "admin-settings" as Screen, label: "Settings", icon: "⚙️" }]
-    : [{ s: "home" as Screen, label: "Home", icon: "🏠" }, { s: "pricing" as Screen, label: "Rates", icon: "💰" }, { s: "calendar" as Screen, label: "Book a Slot", icon: "📅" }, { s: "newsfeed" as Screen, label: "Community Feed", icon: "📰" }, { s: "chat" as Screen, label: "Messages", icon: "💬" }, { s: "dashboard" as Screen, label: "My Bookings", icon: "🎫" }];
+  const links = isAdmin ? ADMIN_NAV : CUSTOMER_NAV;
   return (
     <div className="fixed inset-0 z-[60] flex lg:hidden">
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
@@ -114,7 +131,7 @@ export function Drawer({ open, onClose, onNav, isAdmin }: { open: boolean; onClo
 }
 
 // ─── Top Bar ──────────────────────────────────────────────────────────────────
-export function TopBar({ title, onBack, onMenu, badge, isAdmin }: { title?: string; onBack?: () => void; onMenu?: () => void; badge?: number; isAdmin?: boolean }) {
+export function TopBar({ title, onBack, onMenu, isAdmin }: { title?: string; onBack?: () => void; onMenu?: () => void; isAdmin?: boolean }) {
   const { onNav, onLogout, isAdmin: ctxIsAdmin } = useContext(TopBarCtx);
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifs, setShowNotifs] = useState(false);
@@ -226,29 +243,17 @@ export function TopBar({ title, onBack, onMenu, badge, isAdmin }: { title?: stri
 
 // ─── Bottom Nav ───────────────────────────────────────────────────────────────
 export function BottomNav({ screen, onNav, isAdmin }: { screen: Screen; onNav: (s: Screen) => void; isAdmin: boolean }) {
-  const custTabs = [
-    { s: "home" as Screen, label: "Home", ico: "🏠" },
-    { s: "pricing" as Screen, label: "Rates", ico: "💰" },
-    { s: "newsfeed" as Screen, label: "Feed", ico: "📰" },
-    { s: "chat" as Screen, label: "Chat", ico: "💬" },
-    { s: "dashboard" as Screen, label: "Bookings", ico: "🎫" },
-  ];
-  const adminTabs = [
-    { s: "admin-bookings" as Screen, label: "Bookings", ico: "📅" },
-    { s: "admin-newsfeed" as Screen, label: "Newsfeed", ico: "📋" },
-    { s: "admin-chat" as Screen, label: "Chat", ico: "🎧" },
-    { s: "admin-settings" as Screen, label: "Settings", ico: "⚙️" },
-  ];
-  const tabs = isAdmin ? adminTabs : custTabs;
+  const nav = isAdmin ? ADMIN_NAV : CUSTOMER_NAV;
+  const tabs = isAdmin ? nav : nav.filter((l) => CUSTOMER_BOTTOM_NAV.includes(l.s));
   return (
     <nav style={{ backgroundColor: `${BG}fa`, backdropFilter: "blur(14px)", borderTop: `1px solid rgba(124,58,237,0.15)` }}
       className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center">
       {tabs.map((t) => {
-        const active = screen === t.s || (t.s === "venue-detail" && screen === "calendar");
+        const active = isNavActive(screen, t.s);
         return (
           <button key={t.s} onClick={() => onNav(t.s)} className="flex-1 flex flex-col items-center py-2.5 gap-0.5 transition-colors" style={{ color: active ? "#c4b5fd" : "#6b7280" }}>
-            <span className="text-lg leading-none">{t.ico}</span>
-            <span className="text-[9px] font-semibold tracking-wide">{t.label}</span>
+            <span className="text-lg leading-none">{t.icon}</span>
+            <span className="text-[9px] font-semibold tracking-wide">{BOTTOM_NAV_LABELS[t.s] ?? t.label}</span>
             {active && <span className="w-4 h-0.5 rounded-full mt-0.5" style={{ backgroundColor: PURPLE }} />}
           </button>
         );

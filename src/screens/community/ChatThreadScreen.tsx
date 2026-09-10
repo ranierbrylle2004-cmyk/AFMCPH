@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import type { Conversation, Message } from "../../types/index";
 import { BG, PURPLE, PURPLE_DIM, PURPLE_BORDER, ORANGE, CARD, SURFACE } from "../../constants/theme";
-import { IcoBack, IcoSend, IcoShield } from "../../components/Icons";
+import { IcoBack, IcoSend } from "../../components/Icons";
 
 interface ChatThreadScreenProps {
   convoId: string;
   convos: Conversation[];
-  setConvos: (c: Conversation[]) => void;
+  setConvos: React.Dispatch<React.SetStateAction<Conversation[]>>;
   onBack: () => void;
   isAdmin: boolean;
 }
@@ -16,11 +16,25 @@ export function ChatThreadScreen({ convoId, convos, setConvos, onBack, isAdmin }
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [convo?.messages.length]);
-  if (!convo) return null;
+
+  if (!convo) {
+    return (
+      <>
+        <header style={{ backgroundColor: `${BG}f7`, backdropFilter: "blur(16px)", borderBottom: `1px solid rgba(124,58,237,0.12)` }}
+          className="fixed top-0 right-0 left-0 lg:left-60 z-30 flex items-center gap-3 px-4 md:px-6 h-14">
+          <button onClick={onBack} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 transition-colors"><IcoBack /></button>
+          <span className="text-white font-semibold text-sm">Conversation not found</span>
+        </header>
+        <div className="pt-14 px-4 text-center text-gray-500 text-sm">This chat is no longer available.</div>
+      </>
+    );
+  }
+
   const send = () => {
-    if (!input.trim()) return;
-    const msg: Message = { id: `m${Date.now()}`, from: "me", text: input.trim(), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) };
-    setConvos(convos.map((c) => c.id === convoId ? { ...c, messages: [...c.messages, msg], lastMsg: input.trim(), unread: 0 } : c));
+    const text = input.trim();
+    if (!text) return;
+    const msg: Message = { id: `m${Date.now()}`, from: "me", text, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) };
+    setConvos((prev) => prev.map((c) => c.id === convoId ? { ...c, messages: [...c.messages, msg], lastMsg: text, unread: 0 } : c));
     setInput("");
   };
   return (
@@ -35,7 +49,7 @@ export function ChatThreadScreen({ convoId, convos, setConvos, onBack, isAdmin }
         </div>
         {isAdmin && (
           <button
-            onClick={() => setConvos(convos.map((c) => c.id === convoId ? { ...c, resolved: !c.resolved } : c))}
+            onClick={() => setConvos((prev) => prev.map((c) => c.id === convoId ? { ...c, resolved: !c.resolved } : c))}
             className="text-[10px] px-2.5 py-1 rounded-full font-bold transition-all"
             style={{ backgroundColor: convo.resolved ? "rgba(22,163,74,0.15)" : PURPLE_DIM, color: convo.resolved ? "#34d399" : "#a78bfa" }}>
             {convo.resolved ? "✓ Resolved" : "Mark Resolved"}

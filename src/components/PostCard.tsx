@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { Post } from "../types";
-import { CARD, ORANGE, PURPLE, PURPLE_BORDER, PURPLE_DIM, SURFACE } from "../constants/theme";
-import { postTypeStyle } from "../constants/theme";
+import { CARD, ORANGE, PURPLE, PURPLE_BORDER, SURFACE, postTypeStyle } from "../constants/theme";
 import { IcoHeart, IcoComment } from "./Icons";
 
 export function PostCard({ post, liked, onLike }: { post: Post; liked: boolean; onLike: () => void }) {
