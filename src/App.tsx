@@ -1112,7 +1112,7 @@ function PostCard({ post, liked, onLike }: { post: Post; liked: boolean; onLike:
 }
 
 // ─── Screen: Newsfeed ─────────────────────────────────────────────────────────
-function NewsfeedScreen({ onBack, posts, setPosts, pendingPosts, setPendingPosts }: { onBack: () => void; posts: Post[]; setPosts: React.Dispatch<React.SetStateAction<Post[]>>; pendingPosts: Post[]; setPendingPosts: React.Dispatch<React.SetStateAction<Post[]>> }) {
+function NewsfeedScreen({ onBack, posts, setPosts, pendingPosts, setPendingPosts, members = 0, availableCourts = 0 }: { onBack: () => void; posts: Post[]; setPosts: React.Dispatch<React.SetStateAction<Post[]>>; pendingPosts: Post[]; setPendingPosts: React.Dispatch<React.SetStateAction<Post[]>>; members?: number; availableCourts?: number }) {
   const [filter, setFilter] = useState<PostType | "all">("all");
   const [showSubmit, setShowSubmit] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -2624,7 +2624,7 @@ export default function App() {
         {screen === "payment" && <PaymentScreen onNav={navigate} onBack={goBack} settings={settings} />}
         {screen === "dashboard" && <DashboardScreen onBack={goBack} bookings={bookings} setBookings={setBookings} />}
         {screen === "pricing" && <PricingScreen onNav={navigate} onBack={goBack} settings={settings} />}
-        {screen === "newsfeed" && <NewsfeedScreen onBack={goBack} posts={posts} setPosts={setPosts} pendingPosts={pendingPosts} setPendingPosts={setPendingPosts} />}
+        {screen === "newsfeed" && <NewsfeedScreen onBack={goBack} posts={posts} setPosts={setPosts} pendingPosts={pendingPosts} setPendingPosts={setPendingPosts} members={adminConvos.length} availableCourts={settings.courts.filter((c) => c.available).length} />}
         {screen === "chat" && <ChatScreen onNav={navigate} onBack={goBack} setActiveConvo={setActiveConvo} convos={custConvos} isAdmin={false} />}
         {screen === "chat-thread" && <ChatThreadScreen convoId={activeConvo} convos={custConvos} setConvos={setCustConvos} onBack={goBack} isAdmin={false} />}
         {screen === "admin-bookings" && <AdminBookingsScreen onBack={goBack} bookings={bookings} setBookings={setBookings} />}
