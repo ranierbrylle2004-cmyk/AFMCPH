@@ -7,7 +7,7 @@ import db, { initializeDatabase } from './db-sqlite';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
 // Middleware
 app.use(cors());
@@ -223,3 +223,8 @@ process.on('SIGINT', () => {
     process.exit(0);
   });
 });
+
+// Prevent process from exiting
+setInterval(() => {
+  // Keepalive - prevents process from exiting
+}, 1000);
