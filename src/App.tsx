@@ -41,19 +41,36 @@ export default function App() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [pendingPosts, setPendingPosts] = useState<Post[]>([]);
   const [pendingBooking, setPendingBooking] = useState<{ court: string; date: string; time: string; price: string } | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   const navigate = (s: Screen) => { setHistory((h) => [...h, screen]); setScreen(s); };
   const goBack = () => { const prev = history[history.length - 1] ?? "home"; setHistory((h) => h.slice(0, -1)); setScreen(prev); };
 
-  const handleLogin = (asAdmin: boolean) => {
+  const handleLogin = async (asAdmin: boolean, user?: any) => {
     setIsAdmin(asAdmin);
     setHistory([]);
+    
+    if (user) {
+      setCurrentUser(user);
+    }
+    
+    // Load bookings from database for both admin and users
+    try {
+      const { api } = await import("./utils/api");
+      const allBookings = await api.getBookings();
+      setBookings(allBookings);
+    } catch (error) {
+      console.error("Failed to load bookings:", error);
+    }
+    
     setScreen(asAdmin ? "admin-newsfeed" : "home");
   };
 
   const handleLogout = () => {
     setHistory([]);
     setIsAdmin(false);
+    setCurrentUser(null);
+    setBookings([]);
     setScreen("login");
   };
 
@@ -62,8 +79,8 @@ export default function App() {
   const bottomNavScreens: Screen[] = ["home", "venue-detail", "calendar", "pricing", "newsfeed", "chat", "dashboard", "admin-bookings", "admin-newsfeed", "admin-chat", "admin-settings"];
   const showBottomNav = bottomNavScreens.includes(screen);
 
-  if (screen === "login") return <LoginScreen onLogin={handleLogin} onRegister={() => setScreen("register")} />;
-  if (screen === "register") return <RegisterScreen onLogin={() => handleLogin(false)} onBack={() => setScreen("login")} />;
+  if (screen === "login") return <LoginScreen onLogin={handleLogin} onRegister={() => setScreen("register")} setCurrentUser={setCurrentUser} />;
+  if (screen === "register") return <RegisterScreen onLogin={(user) => handleLogin(false, user)} onBack={() => setScreen("login")} setCurrentUser={setCurrentUser} />;
 
   return (
     <TopBarCtx.Provider value={topBarProps}>
@@ -74,7 +91,7 @@ export default function App() {
         {screen === "venue-detail" && <VenueDetailScreen onNav={navigate} onBack={goBack} settings={settings} />}
         {screen === "calendar" && <CalendarScreen onNav={navigate} onBack={goBack} settings={settings} onBookingSelect={setPendingBooking} />}
         {screen === "checkout" && <CheckoutScreen onNav={navigate} onBack={goBack} settings={settings} booking={pendingBooking} />}
-        {screen === "payment" && <PaymentScreen onNav={navigate} onBack={goBack} settings={settings} booking={pendingBooking} onBookingComplete={(booking) => { setBookings((prev) => [...prev, booking]); setPendingBooking(null); }} />}
+        {screen === "payment" && <PaymentScreen onNav={navigate} onBack={goBack} settings={settings} booking={pendingBooking} onBookingComplete={(booking) => { setBookings((prev) => [...prev, booking]); setPendingBooking(null); }} userId={currentUser?.id} />}
         {screen === "dashboard" && <DashboardScreen onBack={goBack} bookings={bookings} setBookings={setBookings} />}
         {screen === "pricing" && <PricingScreen onNav={navigate} onBack={goBack} settings={settings} />}
         {screen === "newsfeed" && <NewsfeedScreen onBack={goBack} posts={posts} setPosts={setPosts} pendingPosts={pendingPosts} setPendingPosts={setPendingPosts} members={adminConvos.length} availableCourts={settings.courts.filter((c) => c.available).length} />}

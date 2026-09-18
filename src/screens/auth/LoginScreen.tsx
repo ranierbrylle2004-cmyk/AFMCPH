@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { BG, CARD, ORANGE, ORANGE_DIM, PURPLE, PURPLE_BORDER, PURPLE_DIM } from "../../constants/theme";
 import { AFMCLogo } from "../../components/Layout";
+import { api } from "../../utils/api";
 
-export function LoginScreen({ onLogin, onRegister }: { onLogin: (asAdmin: boolean) => void; onRegister: () => void }) {
+export function LoginScreen({ onLogin, onRegister, setCurrentUser }: { onLogin: (asAdmin: boolean, user?: any) => void; onRegister: () => void; setCurrentUser?: (user: any) => void }) {
   type Role = "player" | "admin" | null;
   const [role, setRole] = useState<Role>(null);
   const [email, setEmail] = useState("");
@@ -14,19 +15,36 @@ export function LoginScreen({ onLogin, onRegister }: { onLogin: (asAdmin: boolea
 
   const ADMIN_PASS = "admin2026";
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (email.trim().length < 3 || !password) { setError("Please fill in all fields."); return; }
     setError("");
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      if (role === "admin") {
+    
+    if (role === "admin") {
+      setTimeout(() => {
+        setLoading(false);
         if (password !== ADMIN_PASS) { setError("Incorrect admin password."); return; }
         onLogin(true);
-      } else {
-        onLogin(false);
+      }, 900);
+    } else {
+      try {
+        const result = await api.login(email, password);
+        setLoading(false);
+        
+        if (result.error) {
+          setError(result.error);
+          return;
+        }
+        
+        if (setCurrentUser) {
+          setCurrentUser(result);
+        }
+        onLogin(false, result);
+      } catch (error) {
+        setLoading(false);
+        setError("Login failed. Please try again.");
       }
-    }, 900);
+    }
   };
 
   const roleCards: { id: Role; icon: string; title: string; sub: string; color: string; dimBg: string; border: string }[] = [

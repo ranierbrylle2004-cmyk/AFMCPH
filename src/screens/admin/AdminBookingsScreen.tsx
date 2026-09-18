@@ -2,13 +2,20 @@ import { useState } from "react";
 import type { Booking, BookingStatus } from "../../types/index";
 import { ORANGE, CARD, PURPLE, PURPLE_DIM, PURPLE_BORDER, SURFACE, bookingColors } from "../../constants/theme";
 import { TopBar, Page } from "../../components/Layout";
+import { api } from "../../utils/api";
 
 export function AdminBookingsScreen({ onBack, bookings, setBookings }: { onBack: () => void; bookings: Booking[]; setBookings: React.Dispatch<React.SetStateAction<Booking[]>> }) {
   const [filter, setFilter] = useState<BookingStatus | "All">("All");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const updateStatus = (id: string, status: BookingStatus) =>
-    setBookings((prev) => prev.map((b) => b.id === id ? { ...b, status } : b));
+  const updateStatus = async (id: string, status: BookingStatus) => {
+    try {
+      await api.updateBooking(id, status);
+      setBookings((prev) => prev.map((b) => b.id === id ? { ...b, status } : b));
+    } catch (error) {
+      console.error("Failed to update booking status:", error);
+    }
+  };
 
   const filtered = filter === "All" ? bookings : bookings.filter((b) => b.status === filter);
   const statuses: (BookingStatus | "All")[] = ["All", "Pending", "Confirmed", "Completed", "Cancelled"];

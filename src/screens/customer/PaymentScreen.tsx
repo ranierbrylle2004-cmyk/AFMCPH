@@ -3,8 +3,9 @@ import type { Screen, Settings, Booking } from "../../types/index";
 import { PURPLE, ORANGE, PURPLE_DIM, CARD, DEFAULT_SETTINGS, BG, generateId } from "../../constants/theme";
 import { TopBar, Page } from "../../components/Layout";
 import { IcoUpload } from "../../components/Icons";
+import { api } from "../../utils/api";
 
-export function PaymentScreen({ onNav, onBack, settings = DEFAULT_SETTINGS, booking, onBookingComplete }: { onNav: (s: Screen) => void; onBack: () => void; settings?: Settings; booking: { court: string; date: string; time: string; price: string } | null; onBookingComplete: (booking: Booking) => void }) {
+export function PaymentScreen({ onNav, onBack, settings = DEFAULT_SETTINGS, booking, onBookingComplete, userId }: { onNav: (s: Screen) => void; onBack: () => void; settings?: Settings; booking: { court: string; date: string; time: string; price: string } | null; onBookingComplete: (booking: Booking) => void; userId?: string }) {
   const [mobile, setMobile] = useState("");
   const [txRef, setTxRef] = useState("");
   const [file, setFile] = useState<string | null>(null);
@@ -63,7 +64,40 @@ export function PaymentScreen({ onNav, onBack, settings = DEFAULT_SETTINGS, book
             </div>
           </div>
           <p className="text-gray-600 text-xs text-center mt-5">🔒 Encrypted. Used only for AFMC booking verification.</p>
-          <button disabled={!valid || !booking} onClick={() => { if (valid && booking) { const newBooking: Booking = { id: generateId(), court: booking.court, sport: "Pickleball", date: booking.date, time: booking.time, status: "Pending", createdAt: new Date(), price: booking.price, player: "Current User", avatar: "👤" }; onBookingComplete(newBooking); onNav("dashboard"); } }}
+          <button disabled={!valid || !booking} onClick={async () => {
+            if (valid && booking) {
+              try {
+                const newBooking: Booking = {
+                  id: generateId(),
+                  court: booking.court,
+                  sport: "Pickleball",
+                  date: booking.date,
+                  time: booking.time,
+                  status: "Pending",
+                  createdAt: new Date(),
+                  price: booking.price,
+                  player: "Current User",
+                  avatar: "👤"
+                };
+                
+                if (userId) {
+                  await api.createBooking({
+                    userId,
+                    court: booking.court,
+                    sport: "Pickleball",
+                    date: booking.date,
+                    time: booking.time,
+                    price: booking.price
+                  });
+                }
+                
+                onBookingComplete(newBooking);
+                onNav("dashboard");
+              } catch (error) {
+                console.error("Failed to create booking:", error);
+              }
+            }
+          }}
             className="w-full mt-5 py-4 rounded-2xl text-white font-bold text-base transition-all active:scale-95 disabled:opacity-35"
             style={{ background: valid && booking ? `linear-gradient(135deg, ${PURPLE}, ${ORANGE})` : "#374151" }}>
             {!booking ? "No Booking Selected" : valid ? "Submit Payment ✓" : "Complete All Fields"}

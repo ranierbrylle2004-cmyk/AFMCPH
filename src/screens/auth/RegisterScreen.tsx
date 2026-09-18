@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { BG, CARD, ORANGE, PURPLE, PURPLE_BORDER, PURPLE_DIM } from "../../constants/theme";
 import { AFMCLogo } from "../../components/Layout";
+import { api } from "../../utils/api";
 
-export function RegisterScreen({ onLogin, onBack }: { onLogin: () => void; onBack: () => void }) {
+export function RegisterScreen({ onLogin, onBack, setCurrentUser }: { onLogin: (user?: any) => void; onBack: () => void; setCurrentUser?: (user: any) => void }) {
   const [step, setStep] = useState<1 | 2>(1);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -46,10 +47,35 @@ export function RegisterScreen({ onLogin, onBack }: { onLogin: () => void; onBac
 
   const handleNext = () => { if (validateStep1()) setStep(2); };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateStep2()) return;
     setLoading(true);
-    setTimeout(() => { setLoading(false); setDone(true); }, 1200);
+    
+    try {
+      const result = await api.register({
+        email,
+        password,
+        firstName,
+        lastName,
+        skillLevel,
+      });
+      
+      setLoading(false);
+      
+      if (result.error) {
+        setErrors({ email: result.error });
+        return;
+      }
+      
+      if (setCurrentUser) {
+        setCurrentUser(result);
+      }
+      
+      setDone(true);
+    } catch (error) {
+      setLoading(false);
+      setErrors({ email: "Registration failed. Please try again." });
+    }
   };
 
   const inputBase = "w-full px-4 py-3.5 rounded-2xl text-white text-sm placeholder-gray-600 focus:outline-none transition-all";
