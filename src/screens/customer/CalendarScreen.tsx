@@ -16,7 +16,7 @@ const TIME_SLOTS: TimeSlot[] = [
   { time: "8:00 PM", status: "available" },
 ];
 
-export function CalendarScreen({ onNav, onBack, settings = DEFAULT_SETTINGS }: { onNav: (s: Screen) => void; onBack: () => void; settings?: Settings }) {
+export function CalendarScreen({ onNav, onBack, settings = DEFAULT_SETTINGS, onBookingSelect }: { onNav: (s: Screen) => void; onBack: () => void; settings?: Settings; onBookingSelect: (booking: { court: string; date: string; time: string; price: string }) => void }) {
   const [selectedDay, setSelectedDay] = useState(1);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedCourt, setSelectedCourt] = useState(() => settings.courts.find((c) => c.available)?.name ?? settings.courts[0]?.name ?? "Court 1");
@@ -118,7 +118,7 @@ export function CalendarScreen({ onNav, onBack, settings = DEFAULT_SETTINGS }: {
                   {isMorningSlot(selectedSlot) ? "Morning rate" : "Evening rate"}
                 </p>
               )}
-              <button disabled={!selectedSlot} onClick={() => selectedSlot && onNav("checkout")}
+              <button disabled={!selectedSlot} onClick={() => { if (selectedSlot) { onBookingSelect({ court: selectedCourt, date: `Aug ${WEEK_DATES[selectedDay]}, 2026`, time: selectedSlot, price: `₱${isMorningSlot(selectedSlot) ? settings.morningRate : settings.eveningRate}` }); onNav("checkout"); } }}
                 className="w-full mt-4 py-4 rounded-2xl text-white font-bold text-base transition-all active:scale-95 disabled:opacity-40"
                 style={{ background: selectedSlot ? `linear-gradient(135deg, ${PURPLE}, ${ORANGE})` : "#374151" }}>
                 {selectedSlot ? "Lock This Slot →" : "Pick a Time Slot"}
@@ -136,7 +136,7 @@ export function CalendarScreen({ onNav, onBack, settings = DEFAULT_SETTINGS }: {
               ₱{selectedSlot && isMorningSlot(selectedSlot) ? settings.morningRate : settings.eveningRate}
             </p>
           </div>
-          <button onClick={() => onNav("checkout")} className="w-full py-4 rounded-2xl text-white font-bold text-base transition-all active:scale-95"
+          <button onClick={() => { onBookingSelect({ court: selectedCourt, date: `Aug ${WEEK_DATES[selectedDay]}, 2026`, time: selectedSlot, price: `₱${isMorningSlot(selectedSlot) ? settings.morningRate : settings.eveningRate}` }); onNav("checkout"); }} className="w-full py-4 rounded-2xl text-white font-bold text-base transition-all active:scale-95"
             style={{ background: `linear-gradient(135deg, ${PURPLE}, ${ORANGE})` }}>Lock This Slot →</button>
         </div>
       )}

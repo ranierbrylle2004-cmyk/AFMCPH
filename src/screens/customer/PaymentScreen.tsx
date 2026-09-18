@@ -1,10 +1,10 @@
 import { useState, useRef } from "react";
-import type { Screen, Settings } from "../../types/index";
-import { PURPLE, ORANGE, PURPLE_DIM, CARD, DEFAULT_SETTINGS, BG } from "../../constants/theme";
+import type { Screen, Settings, Booking } from "../../types/index";
+import { PURPLE, ORANGE, PURPLE_DIM, CARD, DEFAULT_SETTINGS, BG, generateId } from "../../constants/theme";
 import { TopBar, Page } from "../../components/Layout";
 import { IcoUpload } from "../../components/Icons";
 
-export function PaymentScreen({ onNav, onBack, settings = DEFAULT_SETTINGS }: { onNav: (s: Screen) => void; onBack: () => void; settings?: Settings }) {
+export function PaymentScreen({ onNav, onBack, settings = DEFAULT_SETTINGS, booking, onBookingComplete }: { onNav: (s: Screen) => void; onBack: () => void; settings?: Settings; booking: { court: string; date: string; time: string; price: string } | null; onBookingComplete: (booking: Booking) => void }) {
   const [mobile, setMobile] = useState("");
   const [txRef, setTxRef] = useState("");
   const [file, setFile] = useState<string | null>(null);
@@ -15,10 +15,18 @@ export function PaymentScreen({ onNav, onBack, settings = DEFAULT_SETTINGS }: { 
       <TopBar title="GCash Payment" onBack={onBack} />
       <Page>
         <div className="max-w-xl mx-auto">
+          {!booking && (
+            <div className="mt-5 rounded-2xl p-5 text-center" style={{ backgroundColor: CARD }}>
+              <p className="text-gray-400 text-sm">No booking details available. Please select a time slot first.</p>
+              <button onClick={() => onNav("calendar")} className="mt-4 px-6 py-3 rounded-xl text-white font-semibold" style={{ backgroundColor: PURPLE }}>Go to Calendar</button>
+            </div>
+          )}
+          {booking && (
+            <>
           <div className="mt-5 flex items-center gap-3 p-4 rounded-2xl" style={{ background: "linear-gradient(135deg, #0070e0 0%, #00457c 100%)" }}>
             <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl">💙</div>
             <div><p className="text-white font-bold text-base">GCash Payment</p><p className="text-blue-200 text-xs">Secure & Instant Verification</p></div>
-            <div className="ml-auto text-right"><p className="text-white/60 text-xs">Amount</p><p style={{ fontFamily: "Barlow Condensed, sans-serif", color: "#c4b5fd" }} className="font-black text-2xl">₱{settings.morningRate}</p></div>
+            <div className="ml-auto text-right"><p className="text-white/60 text-xs">Amount</p><p style={{ fontFamily: "Barlow Condensed, sans-serif", color: "#c4b5fd" }} className="font-black text-2xl">{booking?.price ?? "—"}</p></div>
           </div>
           <div className="mt-4 p-4 rounded-2xl text-center" style={{ backgroundColor: CARD }}>
             <p className="text-gray-400 text-xs mb-2">Send payment to AFMC Pickle Hub</p>
@@ -55,11 +63,13 @@ export function PaymentScreen({ onNav, onBack, settings = DEFAULT_SETTINGS }: { 
             </div>
           </div>
           <p className="text-gray-600 text-xs text-center mt-5">🔒 Encrypted. Used only for AFMC booking verification.</p>
-          <button disabled={!valid} onClick={() => valid && onNav("dashboard")}
+          <button disabled={!valid || !booking} onClick={() => { if (valid && booking) { const newBooking: Booking = { id: generateId(), court: booking.court, sport: "Pickleball", date: booking.date, time: booking.time, status: "Pending", createdAt: new Date(), price: booking.price, player: "Current User", avatar: "👤" }; onBookingComplete(newBooking); onNav("dashboard"); } }}
             className="w-full mt-5 py-4 rounded-2xl text-white font-bold text-base transition-all active:scale-95 disabled:opacity-35"
-            style={{ background: valid ? `linear-gradient(135deg, ${PURPLE}, ${ORANGE})` : "#374151" }}>
-            {valid ? "Submit Payment ✓" : "Complete All Fields"}
+            style={{ background: valid && booking ? `linear-gradient(135deg, ${PURPLE}, ${ORANGE})` : "#374151" }}>
+            {!booking ? "No Booking Selected" : valid ? "Submit Payment ✓" : "Complete All Fields"}
           </button>
+            </>
+          )}
         </div>
       </Page>
     </>

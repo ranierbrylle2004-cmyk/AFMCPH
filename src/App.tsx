@@ -40,6 +40,7 @@ export default function App() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [pendingPosts, setPendingPosts] = useState<Post[]>([]);
+  const [pendingBooking, setPendingBooking] = useState<{ court: string; date: string; time: string; price: string } | null>(null);
 
   const navigate = (s: Screen) => { setHistory((h) => [...h, screen]); setScreen(s); };
   const goBack = () => { const prev = history[history.length - 1] ?? "home"; setHistory((h) => h.slice(0, -1)); setScreen(prev); };
@@ -71,9 +72,9 @@ export default function App() {
       <div className="lg:pl-60">
         {screen === "home" && <HomeScreen onNav={navigate} isAdmin={isAdmin} menuOpen={menuOpen} setMenuOpen={setMenuOpen} settings={settings} bookings={bookings} posts={posts} />}
         {screen === "venue-detail" && <VenueDetailScreen onNav={navigate} onBack={goBack} settings={settings} />}
-        {screen === "calendar" && <CalendarScreen onNav={navigate} onBack={goBack} settings={settings} />}
-        {screen === "checkout" && <CheckoutScreen onNav={navigate} onBack={goBack} settings={settings} />}
-        {screen === "payment" && <PaymentScreen onNav={navigate} onBack={goBack} settings={settings} />}
+        {screen === "calendar" && <CalendarScreen onNav={navigate} onBack={goBack} settings={settings} onBookingSelect={setPendingBooking} />}
+        {screen === "checkout" && <CheckoutScreen onNav={navigate} onBack={goBack} settings={settings} booking={pendingBooking} />}
+        {screen === "payment" && <PaymentScreen onNav={navigate} onBack={goBack} settings={settings} booking={pendingBooking} onBookingComplete={(booking) => { setBookings((prev) => [...prev, booking]); setPendingBooking(null); }} />}
         {screen === "dashboard" && <DashboardScreen onBack={goBack} bookings={bookings} setBookings={setBookings} />}
         {screen === "pricing" && <PricingScreen onNav={navigate} onBack={goBack} settings={settings} />}
         {screen === "newsfeed" && <NewsfeedScreen onBack={goBack} posts={posts} setPosts={setPosts} pendingPosts={pendingPosts} setPendingPosts={setPendingPosts} members={adminConvos.length} availableCourts={settings.courts.filter((c) => c.available).length} />}

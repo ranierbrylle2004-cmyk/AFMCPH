@@ -87,3 +87,5 @@ export const postTypeStyle: Record<PostType, { bg: string; text: string; label: 
 };
 
 export const daysBetween = (a: Date, b: Date) => Math.floor((b.getTime() - a.getTime()) / 86400000);
+
+export const generateId = () => Math.random().toString(36).substr(2, 9);
