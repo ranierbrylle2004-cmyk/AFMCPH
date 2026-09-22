@@ -7,18 +7,18 @@
 ## Step 1: Create D1 Database
 ```bash
 # Create the database
-wrangler d1 create afmc-picklehub
+npx wrangler d1 create afmc-picklehub
 
-# Copy the database_id from the output and update wrangler.toml
+# Copy the database_id from the output (format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
 ```
 
 ## Step 2: Update wrangler.toml
-Replace `local` in wrangler.toml with the actual database ID from step 1:
+Add the database_id to wrangler.toml:
 ```toml
 [[d1_databases]]
 binding = "DB"
 database_name = "afmc-picklehub"
-database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # Your actual ID
+database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # Replace with actual ID from step 1
 ```
 
 ## Step 3: Execute Schema
@@ -47,7 +47,7 @@ npm run worker:deploy
 ## Step 6: Update Frontend API URL
 After deployment, update the API_BASE in `src/utils/api.ts` with your production URL:
 ```typescript
-const API_BASE = 'https://afmc-picklehub-api.your-subdomain.workers.dev/api';
+const API_BASE = 'https://afmcph.your-subdomain.workers.dev/api';
 ```
 
 ## Development Workflow
@@ -65,17 +65,23 @@ npm run dev:all
 ## Database Management Commands
 ```bash
 # List all D1 databases
-wrangler d1 list
+npx wrangler d1 list
 
 # Execute SQL commands (local)
-wrangler d1 execute afmc-picklehub --command="SELECT * FROM users" --local
+npx wrangler d1 execute afmc-picklehub --command="SELECT * FROM users" --local
 
 # Execute SQL commands (production)
-wrangler d1 execute afmc-picklehub --command="SELECT * FROM users" --remote
+npx wrangler d1 execute afmc-picklehub --command="SELECT * FROM users" --remote
 
 # Backup database
-wrangler d1 export afmc-picklehub --output=backup.sql
+npx wrangler d1 export afmc-picklehub --output=backup.sql
 ```
+
+## Important Notes
+- The Worker name in wrangler.toml must match your Cloudflare project name
+- The database_id is required for production deployment
+- Local development uses `--local` flag for D1 operations
+- Production deployment uses `--remote` flag for D1 operations
 
 ## Benefits of This Setup
 - **Ultra-fast edge routing** with Hono framework

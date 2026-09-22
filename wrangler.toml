@@ -1,4 +1,4 @@
-name = "afmc-picklehub-api"
+name = "afmcph"
 main = "src/worker/index.ts"
 compatibility_date = "2024-01-01"
 workers_dev = true
@@ -7,7 +7,7 @@ workers_dev = true
 [[d1_databases]]
 binding = "DB"
 database_name = "afmc-picklehub"
-database_id = "local" # Update with actual D1 database ID after `wrangler d1 create`
+# database_id will be added after D1 database creation with: wrangler d1 create afmc-picklehub
 
 # Environment variables
 [vars]
