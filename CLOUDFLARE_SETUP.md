@@ -13,7 +13,7 @@ wrangler d1 create afmc-picklehub
 ```
 
 ## Step 2: Update wrangler.toml
-Replace `your-database-id` in wrangler.toml with the actual database ID from step 1:
+Replace `local` in wrangler.toml with the actual database ID from step 1:
 ```toml
 [[d1_databases]]
 binding = "DB"
@@ -23,8 +23,11 @@ database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # Your actual ID
 
 ## Step 3: Execute Schema
 ```bash
-# Create tables and initial data
-wrangler d1 execute afmc-picklehub --file=schema.sql
+# Create tables and initial data (local)
+npx wrangler d1 execute afmc-picklehub --file=schema.sql --local
+
+# Create tables and initial data (production)
+npx wrangler d1 execute afmc-picklehub --file=schema.sql --remote
 ```
 
 ## Step 4: Local Development
@@ -47,16 +50,28 @@ After deployment, update the API_BASE in `src/utils/api.ts` with your production
 const API_BASE = 'https://afmc-picklehub-api.your-subdomain.workers.dev/api';
 ```
 
+## Development Workflow
+```bash
+# Terminal 1: Start Cloudflare Worker
+npm run worker:dev
+
+# Terminal 2: Start frontend
+npm run dev
+
+# Or run both together
+npm run dev:all
+```
+
 ## Database Management Commands
 ```bash
 # List all D1 databases
 wrangler d1 list
 
-# Execute SQL commands
-wrangler d1 execute afmc-picklehub --command="SELECT * FROM users"
+# Execute SQL commands (local)
+wrangler d1 execute afmc-picklehub --command="SELECT * FROM users" --local
 
-# Open D1 console (interactive)
-wrangler d1 execute afmc-picklehub --remote
+# Execute SQL commands (production)
+wrangler d1 execute afmc-picklehub --command="SELECT * FROM users" --remote
 
 # Backup database
 wrangler d1 export afmc-picklehub --output=backup.sql

@@ -7,7 +7,7 @@ workers_dev = true
 [[d1_databases]]
 binding = "DB"
 database_name = "afmc-picklehub"
-database_id = "local"
+database_id = "local" # Update with actual D1 database ID after `wrangler d1 create`
 
 # Environment variables
 [vars]
