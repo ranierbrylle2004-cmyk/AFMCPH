@@ -1,4 +1,5 @@
-const API_BASE = 'http://localhost:3001/api';
+// Use local development server or production Cloudflare Workers URL
+const API_BASE = 'http://localhost:8787/api';  // Local Wrangler dev server
 
 export const api = {
   // User operations

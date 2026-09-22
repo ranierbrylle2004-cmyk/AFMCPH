@@ -1,0 +1,14 @@
+name = "afmc-picklehub-api"
+main = "src/worker/index.ts"
+compatibility_date = "2024-01-01"
+workers_dev = true
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "afmc-picklehub"
+database_id = "local"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "development"
